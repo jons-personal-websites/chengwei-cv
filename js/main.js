@@ -170,6 +170,151 @@ IMPORTANT GUIDELINES:
   gsap.to(canvas, { opacity: 1, duration: 2.5, delay: 0.3 });
 })();
 
+// ====== HERO GHOST CODE RAIN ======
+(function() {
+  const canvas = document.getElementById('codeCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  // Cheng Wei's actual technical vocabulary — makes it authentic, not decorative
+  const SNIPPETS = [
+    'uart_write(0x3F, data, len);',
+    '#define MODBUS_ADDR   0x01',
+    '$ make flash TARGET=pic18f452',
+    '#include <xc.h>',
+    'if (elevator.status == READY) {',
+    'RS485_send(frame, sizeof(frame));',
+    '$ ping -c 4 192.168.0.1',
+    'TRIS_A = 0x00; // all outputs',
+    'while (UART_RX_FLAG == 0);',
+    'DCS.commission("lift_01");',
+    'I2C_read(addr, &rxBuf, 1);',
+    '$ ls -la /dev/ttyUSB*',
+    '#pragma config WDTEN = OFF',
+    'SPI_transfer(0xFF);',
+    '$ ssh 192.168.1.100 -p 22',
+    'gpio_set(PIN_UART_TX, HIGH);',
+    'uint8_t rxBuf[64] = { 0 };',
+    'BMS.register(0x2A, handler);',
+    'void ISR(void) interrupt 4 {',
+    'for (int i = 0; i < 160; i++)',
+    'IoT.connect("kone-dcs-sg");',
+    'VDSL.link.status == "ACTIVE"',
+    'modbus_read_holding(1, 0, 8);',
+    '$ git log --oneline firmware/',
+    'typedef struct { uint8_t cmd; }',
+    'LTA.compliance.verify(liftId);',
+    'escalator.setMode(INSPECTION);',
+    'SCI1BD = BAUD_9600;',
+    '#define FOSC  20000000UL',
+    'RegWrite(REG_STATUS, 0x01);',
+    'atex_sensor.read(&pressure);',
+    '// ESD_TEST_PASS: 4kV contact',
+    'pcb_trace.route(manhattan);',
+    'emc_validate(EMC_CLASS_B);',
+    '$ avrdude -c usbasp -p m328p',
+    'LV_cable_size(load_kW, 0.85);',
+    'BCA_INSPECT.schedule(liftId);',
+    'PLL_init(FOSC, PLL_MUL_4);',
+    'T1CON = 0x31; // TMR1 on',
+    'SEA.region.deploy(solution);',
+  ];
+
+  const FONT_SIZE = 11;
+  const LINE_H   = 19;
+  let cols = [];
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width  = Math.round(rect.width  * window.devicePixelRatio);
+    canvas.height = Math.round(rect.height * window.devicePixelRatio);
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    buildCols();
+  }
+
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function pick()    { return SNIPPETS[Math.floor(Math.random() * SNIPPETS.length)]; }
+
+  function buildCols() {
+    cols = [];
+    const W = canvas.width  / window.devicePixelRatio;
+    const H = canvas.height / window.devicePixelRatio;
+    // ~one column per 155px of width
+    const count = Math.max(4, Math.round(W / 155));
+    const slotW = W / count;
+
+    for (let i = 0; i < count; i++) {
+      // Jitter x within each slot so columns aren't perfectly evenly spaced
+      const x     = slotW * i + rnd(12, slotW - 12);
+      const speed = rnd(0.22, 0.52);          // different speeds = parallax depth
+      const colAlpha = rnd(0.55, 1.0);        // vary per-column intensity slightly
+      const lineCount = Math.ceil(H / LINE_H) + 4;
+      const lines = [];
+
+      for (let j = 0; j < lineCount; j++) {
+        lines.push({
+          text:   pick(),
+          y:      j * LINE_H - rnd(0, H),     // stagger starting positions
+          isCyan: Math.random() < 0.12,        // 12% cyan, rest cobalt
+        });
+      }
+      cols.push({ x, speed, colAlpha, lines });
+    }
+  }
+
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  const W = () => canvas.width  / window.devicePixelRatio;
+  const H = () => canvas.height / window.devicePixelRatio;
+
+  const COBALT_BASE = 0.044;
+  const CYAN_BASE   = 0.036;
+  const FADE_ZONE   = 90;     // px over which lines fade in/out at top & bottom
+
+  function draw() {
+    ctx.clearRect(0, 0, W(), H());
+    ctx.font = `${FONT_SIZE}px "JetBrains Mono", monospace`;
+    ctx.textBaseline = 'top';
+
+    for (const col of cols) {
+      for (const line of col.lines) {
+        // Fade in near bottom edge, fade out near top edge
+        let edgeFade = 1;
+        if (line.y < FADE_ZONE)         edgeFade = Math.max(0, line.y / FADE_ZONE);
+        if (line.y > H() - FADE_ZONE)   edgeFade = Math.max(0, (H() - line.y) / FADE_ZONE);
+
+        const base  = line.isCyan ? CYAN_BASE : COBALT_BASE;
+        const alpha = base * edgeFade * col.colAlpha;
+
+        if (alpha > 0.002) {
+          ctx.fillStyle = line.isCyan
+            ? `rgba(0,212,255,${alpha})`
+            : `rgba(27,79,138,${alpha})`;
+          ctx.fillText(line.text, col.x, line.y);
+        }
+
+        // Drift upward
+        line.y -= col.speed;
+
+        // Recycle off the top: new snippet, new position at bottom
+        if (line.y < -LINE_H * 2) {
+          line.y    = H() + LINE_H;
+          line.text = pick();
+          line.isCyan = Math.random() < 0.12;
+        }
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+
+  // Fade in slightly slower than the PCB canvas so it layers in gracefully
+  gsap.to(canvas, { opacity: 1, duration: 4, delay: 1.2 });
+})();
+
 // ====== GSAP SETUP ======
 gsap.registerPlugin(ScrollTrigger);
 
