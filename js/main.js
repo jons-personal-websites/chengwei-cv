@@ -170,13 +170,13 @@ IMPORTANT GUIDELINES:
   gsap.to(canvas, { opacity: 1, duration: 2.5, delay: 0.3 });
 })();
 
-// ====== HERO GHOST CODE RAIN ======
+// ====== HERO GHOST CODE RAIN + LIFT SILHOUETTES ======
 (function() {
   const canvas = document.getElementById('codeCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  // Elevator & escalator engineering vocabulary — specs, status, compliance, physics
+  // Elevator & escalator engineering vocabulary
   const SNIPPETS = [
     'RATED_SPEED        1.0 m/s',
     'LOAD_CAPACITY      1000 kg',
@@ -223,6 +223,141 @@ IMPORTANT GUIDELINES:
   const FONT_SIZE = 11;
   const LINE_H   = 19;
   let cols = [];
+  let bgCanvas = null;   // offscreen canvas — shapes pre-rendered once per resize
+
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function pick()    { return SNIPPETS[Math.floor(Math.random() * SNIPPETS.length)]; }
+
+  // ── Shape drawing ──────────────────────────────────────────
+  // Elevator: shaft outline + guide rails + car with door split + rope lines
+  function drawElevator(c, cx, cy, scale, alpha) {
+    const sw = 30 * scale, sh = 86 * scale;
+    const x = cx - sw / 2, y = cy - sh / 2;
+    const ri = sw * 0.18;                   // guide rail inset
+
+    c.strokeStyle = `rgba(27,79,138,${alpha})`;
+    c.lineWidth = 0.75;
+
+    c.strokeRect(x, y, sw, sh);            // shaft
+
+    // Guide rails
+    for (const rx of [x + ri, x + sw - ri]) {
+      c.beginPath(); c.moveTo(rx, y + 3); c.lineTo(rx, y + sh - 3); c.stroke();
+    }
+
+    // Car (centred in shaft, ~28% height)
+    const ch = sh * 0.28, cw = sw * 0.58;
+    const cx_ = cx - cw / 2, cy_ = cy - ch / 2;
+    c.strokeRect(cx_, cy_, cw, ch);
+
+    // Door split
+    c.beginPath(); c.moveTo(cx, cy_ + 2); c.lineTo(cx, cy_ + ch - 2); c.stroke();
+
+    // Suspension ropes (cyan)
+    c.strokeStyle = `rgba(0,212,255,${alpha * 0.75})`;
+    for (const rx of [cx - cw * 0.22, cx + cw * 0.22]) {
+      c.beginPath(); c.moveTo(rx, y + 2); c.lineTo(rx, cy_); c.stroke();
+    }
+
+    // Floor indicator panel at shaft top
+    c.strokeStyle = `rgba(27,79,138,${alpha})`;
+    c.strokeRect(cx - sw * 0.21, y + 5, sw * 0.42, sh * 0.09);
+  }
+
+  // Escalator: two parallel inclined rails + perpendicular step ticks + handrails
+  function drawEscalator(c, cx, cy, scale, alpha) {
+    const LEN  = 92 * scale, HW = 13 * scale;
+    const ANG  = Math.PI / 6;               // 30° incline
+    const dx   = Math.cos(ANG);             // incline direction
+    const dy   = -Math.sin(ANG);            // (y up = negative in screen coords)
+    const nx   = Math.sin(ANG);             // perpendicular to incline
+    const ny   = Math.cos(ANG);
+
+    const bx = cx - dx * LEN / 2, by = cy - dy * LEN / 2;  // bottom-left
+    const tx = cx + dx * LEN / 2, ty = cy + dy * LEN / 2;  // top-right
+
+    c.lineWidth = 0.75;
+
+    // Side rails
+    c.strokeStyle = `rgba(27,79,138,${alpha})`;
+    for (const s of [-1, 1]) {
+      c.beginPath();
+      c.moveTo(bx + nx * HW * s, by + ny * HW * s);
+      c.lineTo(tx + nx * HW * s, ty + ny * HW * s);
+      c.stroke();
+    }
+
+    // Step ticks perpendicular to incline
+    const steps = Math.round(LEN / (9 * scale));
+    for (let i = 1; i < steps; i++) {
+      const t = i / steps;
+      const sx = bx + t * (tx - bx), sy = by + t * (ty - by);
+      c.beginPath();
+      c.moveTo(sx - nx * HW, sy - ny * HW);
+      c.lineTo(sx + nx * HW, sy + ny * HW);
+      c.stroke();
+    }
+
+    // Handrails (cyan, slightly outside)
+    c.strokeStyle = `rgba(0,212,255,${alpha * 0.65})`;
+    for (const s of [-1.28, 1.28]) {
+      c.beginPath();
+      c.moveTo(bx + nx * HW * s, by + ny * HW * s);
+      c.lineTo(tx + nx * HW * s, ty + ny * HW * s);
+      c.stroke();
+    }
+  }
+
+  // Pre-render all shapes to an offscreen canvas (called on every resize)
+  function buildShapes() {
+    const W = canvas.width / window.devicePixelRatio;
+    const H = canvas.height / window.devicePixelRatio;
+
+    bgCanvas = document.createElement('canvas');
+    bgCanvas.width  = canvas.width;
+    bgCanvas.height = canvas.height;
+    const bc = bgCanvas.getContext('2d');
+    bc.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+    // Elevator placements — varied scale, scattered across the hero
+    const elevators = [
+      { cx: W * 0.78, cy: H * 0.22, scale: 1.4, alpha: 0.052 },
+      { cx: W * 0.92, cy: H * 0.65, scale: 1.0, alpha: 0.042 },
+      { cx: W * 0.55, cy: H * 0.78, scale: 0.75, alpha: 0.038 },
+      { cx: W * 0.18, cy: H * 0.15, scale: 0.85, alpha: 0.035 },
+      { cx: W * 0.40, cy: H * 0.35, scale: 0.6,  alpha: 0.028 },
+    ];
+    for (const e of elevators) drawElevator(bc, e.cx, e.cy, e.scale, e.alpha);
+
+    // Escalator placements
+    const escalators = [
+      { cx: W * 0.68, cy: H * 0.50, scale: 1.3, alpha: 0.048 },
+      { cx: W * 0.30, cy: H * 0.70, scale: 1.0, alpha: 0.038 },
+      { cx: W * 0.85, cy: H * 0.35, scale: 0.8, alpha: 0.032 },
+    ];
+    for (const e of escalators) drawEscalator(bc, e.cx, e.cy, e.scale, e.alpha);
+  }
+
+  // ── Column text ────────────────────────────────────────────
+  function buildCols() {
+    cols = [];
+    const W = canvas.width  / window.devicePixelRatio;
+    const H = canvas.height / window.devicePixelRatio;
+    const count = Math.max(4, Math.round(W / 155));
+    const slotW = W / count;
+
+    for (let i = 0; i < count; i++) {
+      const x        = slotW * i + rnd(12, slotW - 12);
+      const speed    = rnd(0.22, 0.52);
+      const colAlpha = rnd(0.55, 1.0);
+      const lineCount = Math.ceil(H / LINE_H) + 4;
+      const lines = [];
+      for (let j = 0; j < lineCount; j++) {
+        lines.push({ text: pick(), y: j * LINE_H - rnd(0, H), isCyan: Math.random() < 0.12 });
+      }
+      cols.push({ x, speed, colAlpha, lines });
+    }
+  }
 
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
@@ -230,36 +365,7 @@ IMPORTANT GUIDELINES:
     canvas.height = Math.round(rect.height * window.devicePixelRatio);
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     buildCols();
-  }
-
-  function rnd(a, b) { return a + Math.random() * (b - a); }
-  function pick()    { return SNIPPETS[Math.floor(Math.random() * SNIPPETS.length)]; }
-
-  function buildCols() {
-    cols = [];
-    const W = canvas.width  / window.devicePixelRatio;
-    const H = canvas.height / window.devicePixelRatio;
-    // ~one column per 155px of width
-    const count = Math.max(4, Math.round(W / 155));
-    const slotW = W / count;
-
-    for (let i = 0; i < count; i++) {
-      // Jitter x within each slot so columns aren't perfectly evenly spaced
-      const x     = slotW * i + rnd(12, slotW - 12);
-      const speed = rnd(0.22, 0.52);          // different speeds = parallax depth
-      const colAlpha = rnd(0.55, 1.0);        // vary per-column intensity slightly
-      const lineCount = Math.ceil(H / LINE_H) + 4;
-      const lines = [];
-
-      for (let j = 0; j < lineCount; j++) {
-        lines.push({
-          text:   pick(),
-          y:      j * LINE_H - rnd(0, H),     // stagger starting positions
-          isCyan: Math.random() < 0.12,        // 12% cyan, rest cobalt
-        });
-      }
-      cols.push({ x, speed, colAlpha, lines });
-    }
+    buildShapes();
   }
 
   resize();
@@ -268,38 +374,36 @@ IMPORTANT GUIDELINES:
   const W = () => canvas.width  / window.devicePixelRatio;
   const H = () => canvas.height / window.devicePixelRatio;
 
-  const COBALT_BASE = 0.044;
-  const CYAN_BASE   = 0.036;
-  const FADE_ZONE   = 90;     // px over which lines fade in/out at top & bottom
+  // Text alpha reduced 60% from original (×0.4)
+  const COBALT_BASE = 0.0176;
+  const CYAN_BASE   = 0.0144;
+  const FADE_ZONE   = 90;
 
   function draw() {
     ctx.clearRect(0, 0, W(), H());
+
+    // Shapes layer (static, pre-rendered offscreen)
+    if (bgCanvas) ctx.drawImage(bgCanvas, 0, 0, W(), H());
+
+    // Scrolling text layer
     ctx.font = `${FONT_SIZE}px "JetBrains Mono", monospace`;
     ctx.textBaseline = 'top';
 
     for (const col of cols) {
       for (const line of col.lines) {
-        // Fade in near bottom edge, fade out near top edge
         let edgeFade = 1;
-        if (line.y < FADE_ZONE)         edgeFade = Math.max(0, line.y / FADE_ZONE);
-        if (line.y > H() - FADE_ZONE)   edgeFade = Math.max(0, (H() - line.y) / FADE_ZONE);
+        if (line.y < FADE_ZONE)       edgeFade = Math.max(0, line.y / FADE_ZONE);
+        if (line.y > H() - FADE_ZONE) edgeFade = Math.max(0, (H() - line.y) / FADE_ZONE);
 
-        const base  = line.isCyan ? CYAN_BASE : COBALT_BASE;
-        const alpha = base * edgeFade * col.colAlpha;
-
-        if (alpha > 0.002) {
-          ctx.fillStyle = line.isCyan
-            ? `rgba(0,212,255,${alpha})`
-            : `rgba(27,79,138,${alpha})`;
+        const alpha = (line.isCyan ? CYAN_BASE : COBALT_BASE) * edgeFade * col.colAlpha;
+        if (alpha > 0.001) {
+          ctx.fillStyle = line.isCyan ? `rgba(0,212,255,${alpha})` : `rgba(27,79,138,${alpha})`;
           ctx.fillText(line.text, col.x, line.y);
         }
 
-        // Drift upward
         line.y -= col.speed;
-
-        // Recycle off the top: new snippet, new position at bottom
         if (line.y < -LINE_H * 2) {
-          line.y    = H() + LINE_H;
+          line.y = H() + LINE_H;
           line.text = pick();
           line.isCyan = Math.random() < 0.12;
         }
@@ -310,8 +414,6 @@ IMPORTANT GUIDELINES:
   }
 
   draw();
-
-  // Fade in slightly slower than the PCB canvas so it layers in gracefully
   gsap.to(canvas, { opacity: 1, duration: 4, delay: 1.2 });
 })();
 
