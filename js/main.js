@@ -377,18 +377,22 @@ async function callGemini(prompt, isChat = true) {
     contents.push({ role: 'user', parts: [{ text: CHENGWEI_CONTEXT + '\n\n' + prompt }] });
   }
 
-  const res = await fetch(GEMINI_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents,
-      generationConfig: { temperature: 0.7, maxOutputTokens: 800 },
-    }),
-  });
+  try {
+    const res = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents,
+        generationConfig: { temperature: 0.7, maxOutputTokens: 800 },
+      }),
+    });
 
-  if (!res.ok) throw new Error('API error ' + res.status);
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I could not generate a response.';
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I could not generate a response.';
+  } catch (err) {
+    throw new Error('Gemini call failed: ' + (err.message || 'unknown error'));
+  }
 }
 
 // ====== MARKDOWN RENDERER ======
