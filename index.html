@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goh Cheng Wei — Senior Engineer · Educator · Systems Thinker</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Goh Cheng Wei">
+  <meta property="og:description" content="Senior Engineer, Educator & Systems Thinker based in Singapore — embedded systems, IoT, elevator engineering, and technical training.">
+
+  <!-- Fonts: Space Grotesk (display) + DM Sans (body) + JetBrains Mono (mono) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body class="font-body text-text bg-bg leading-relaxed overflow-x-hidden">
+
+  <!-- ==================== NAVIGATION ==================== -->
+  <nav id="nav" class="fixed top-0 left-0 right-0 z-[1000] border-b border-transparent transition-all duration-300 h-16">
+    <div class="max-w-[1200px] mx-auto px-6 md:px-8 h-full flex items-center justify-between">
+
+      <!-- Brand mark: monospace CW. with cyan dot -->
+      <a href="#" class="flex items-center gap-1.5 no-underline group">
+        <span class="font-mono text-lg font-semibold text-accent tracking-tight">CW<span class="text-cyan" style="color:#00D4FF">.</span></span>
+      </a>
+
+      <!-- Desktop nav links -->
+      <ul id="navLinks" class="hidden md:flex items-center gap-8 list-none">
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#experience" class="nav-link">Experience</a></li>
+        <li><a href="#skills" class="nav-link">Skills</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+
+      <!-- Download CV button (desktop) -->
+      <a href="Goh_Cheng_Wei_Resume_2026.pdf" download class="hidden md:inline-flex items-center gap-2 px-4 py-2 border border-accent text-accent text-sm font-mono rounded-md hover:bg-accent hover:text-white transition-all duration-200 no-underline">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        Download CV
+      </a>
+
+      <!-- Hamburger (mobile) -->
+      <button id="hamburger" onclick="toggleMobileNav()" aria-label="Toggle navigation menu" class="flex md:hidden flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1">
+        <span class="block w-5 h-0.5 bg-text rounded transition-all duration-300"></span>
+        <span class="block w-5 h-0.5 bg-text rounded transition-all duration-300"></span>
+        <span class="block w-5 h-0.5 bg-text rounded transition-all duration-300"></span>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="hidden md:hidden absolute top-16 left-0 right-0 bg-bg/[0.98] backdrop-blur-xl border-b border-stroke">
+      <div class="flex flex-col gap-4 px-8 py-6">
+        <a href="#about" onclick="closeMobileNav()" class="text-sm font-medium text-text-dim no-underline hover:text-accent">About</a>
+        <a href="#experience" onclick="closeMobileNav()" class="text-sm font-medium text-text-dim no-underline hover:text-accent">Experience</a>
+        <a href="#skills" onclick="closeMobileNav()" class="text-sm font-medium text-text-dim no-underline hover:text-accent">Skills</a>
+        <a href="#contact" onclick="closeMobileNav()" class="text-sm font-medium text-text-dim no-underline hover:text-accent">Contact</a>
+        <a href="Goh_Cheng_Wei_Resume_2026.pdf" download class="inline-flex items-center gap-2 text-sm font-mono text-accent no-underline hover:underline">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>Download CV
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== HERO ==================== -->
+  <section id="hero" class="min-h-[90vh] flex items-center pt-16 pb-12 px-6 md:px-8 relative overflow-hidden">
+
+    <!-- Engineering dot-grid overlay -->
+    <div class="hero-dot-grid absolute inset-0 pointer-events-none"></div>
+
+    <!-- PCB-trace canvas background -->
+    <canvas id="heroCanvas" class="absolute inset-0 w-full h-full pointer-events-none" style="opacity:0"></canvas>
+
+    <!-- Subtle floating background shapes -->
+    <div class="absolute w-[400px] h-[400px] rounded-full top-[10%] right-[5%] pointer-events-none" style="background:radial-gradient(circle,rgba(27,79,138,0.05) 0%,transparent 70%)"></div>
+    <div class="absolute w-[250px] h-[250px] rounded-full bottom-[15%] left-[3%] pointer-events-none" style="background:radial-gradient(circle,rgba(0,212,255,0.04) 0%,transparent 70%)"></div>
+
+    <div class="max-w-[1200px] mx-auto w-full relative z-[1]">
+
+      <!-- Terminal prompt label -->
+      <div class="section-label mb-6 flex items-center gap-2" style="color:#00D4FF">
+        <span style="color:#1B4F8A">$</span> whoami
+        <span class="terminal-cursor"></span>
+      </div>
+
+      <!-- Main headline -->
+      <h1 id="heroText" class="font-display font-bold leading-[1.05] tracking-tight text-text mb-6">
+        <span class="hero-line inline-block"><span class="hero-line-inner inline-block text-4xl sm:text-5xl lg:text-[4.5rem]">GOH CHENG WEI</span></span>
+      </h1>
+
+      <!-- Typewriter subtitle -->
+      <div class="font-mono text-base sm:text-lg text-text-dim mb-10 flex items-center gap-2" style="min-height:1.8em">
+        <span style="color:#1B4F8A">&gt;</span>
+        <span id="typewriterText" style="color:#1A1A1A"></span>
+        <span id="typeCursor" class="terminal-cursor"></span>
+      </div>
+
+      <!-- CTAs -->
+      <div class="hero-cta flex flex-wrap items-center gap-4">
+        <a href="Goh_Cheng_Wei_Resume_2026.pdf" download class="btn-primary">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          Download CV
+        </a>
+        <a href="#contact" class="btn-outline">
+          Get in Touch
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+
+      <!-- Contact chips -->
+      <div class="hero-cta flex flex-wrap items-center gap-3 mt-6">
+        <a href="mailto:gohc0047@gmail.com" class="inline-flex items-center gap-1.5 text-sm text-text-dim hover:text-accent transition-colors no-underline font-mono">
+          <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+          gohc0047@gmail.com
+        </a>
+        <span class="text-stroke" aria-hidden="true">·</span>
+        <span class="inline-flex items-center gap-1.5 text-sm text-text-dim font-mono">
+          <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+          (+65) 96813552
+        </span>
+        <span class="text-stroke" aria-hidden="true">·</span>
+        <span class="inline-flex items-center gap-1.5 text-sm text-text-dim font-mono">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+          Singapore
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== STATS BAR ==================== -->
+  <section id="stats" class="relative z-[10] -mt-6 px-6 md:px-8 pb-8">
+    <div class="max-w-[1200px] mx-auto">
+      <div class="bg-accent rounded-2xl px-6 md:px-10 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 shadow-[0_20px_60px_rgba(27,79,138,0.3)]">
+
+        <!-- 16+ Years -->
+        <div class="stat-card text-center md:text-left">
+          <div class="font-mono text-3xl sm:text-4xl font-bold text-white mb-1">
+            <span class="stat-counter" data-target="16">0</span><span class="text-cyan" style="color:#00D4FF">+</span>
+          </div>
+          <div class="font-mono text-xs text-white/60 uppercase tracking-widest">// years_exp</div>
+        </div>
+
+        <!-- 5 Companies -->
+        <div class="stat-card text-center md:text-left">
+          <div class="font-mono text-3xl sm:text-4xl font-bold text-white mb-1">
+            <span class="stat-counter" data-target="5">0</span>
+          </div>
+          <div class="font-mono text-xs text-white/60 uppercase tracking-widest">// companies</div>
+        </div>
+
+        <!-- 160+ Lifts -->
+        <div class="stat-card text-center md:text-left">
+          <div class="font-mono text-3xl sm:text-4xl font-bold text-white mb-1">
+            <span class="stat-counter" data-target="160">0</span><span class="text-cyan" style="color:#00D4FF">+</span>
+          </div>
+          <div class="font-mono text-xs text-white/60 uppercase tracking-widest">// lifts_managed</div>
+        </div>
+
+        <!-- 2 Degrees -->
+        <div class="stat-card text-center md:text-left">
+          <div class="font-mono text-3xl sm:text-4xl font-bold text-white mb-1">
+            <span class="stat-counter" data-target="2">0</span>
+          </div>
+          <div class="font-mono text-xs text-white/60 uppercase tracking-widest">// postgrad_deg</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
