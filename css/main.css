@@ -1,0 +1,495 @@
+/* ============================================================
+   Chengwei CV — Custom Styles
+   Tailwind handles layout/utilities; this file handles:
+   - Custom scrollbar
+   - Nav underline hover
+   - Section label monospace style
+   - Experience accent bars + CRT scan-line easter egg
+   - Skill badge code tokens
+   - Hero engineering dot-grid
+   - Terminal cursor blink
+   - Misc micro-interactions
+   ============================================================ */
+
+/* ── Base ─────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: "DM Sans", sans-serif;
+  background-color: #FAF8F4;
+  color: #1A1A1A;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Custom Scrollbar ─────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #FAF8F4; }
+::-webkit-scrollbar-thumb { background: #C8C6C2; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #1B4F8A; }
+
+/* ── Navigation ───────────────────────────────────────────── */
+
+nav {
+  background: rgba(250, 248, 244, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.nav-link {
+  position: relative;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.875rem;
+  color: #5A5A5A;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: #1B4F8A;
+  transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-link:hover { color: #1B4F8A; }
+.nav-link:hover::after { width: 100%; }
+
+.nav-border { border-bottom: 1px solid #E5E3DF; }
+
+/* ── Section Labels (monospace nerd style) ────────────────── */
+
+.section-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: #1B4F8A;
+  text-transform: uppercase;
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+
+/* Engineering dot-grid overlay on hero */
+.hero-dot-grid {
+  background-image: radial-gradient(circle, rgba(27, 79, 138, 0.18) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* Terminal cursor blink */
+.terminal-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: #00D4FF;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: cursorBlink 1s step-end infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Hero line reveal wrapper */
+.hero-line { overflow: hidden; }
+
+/* ── Stats Bar ─────────────────────────────────────────────── */
+
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+/* ── Capability Cards (About section) ─────────────────────── */
+
+.capability-card {
+  border: 1px solid #E5E3DF;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  background: #FFFFFF;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.capability-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(27, 79, 138, 0.1);
+  border-color: #1B4F8A;
+}
+.capability-tag {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8rem;
+  color: #1B4F8A;
+  font-weight: 600;
+}
+
+/* ── Experience Section ────────────────────────────────────── */
+
+.exp-block {
+  position: relative;
+  padding-left: 1.25rem;
+  transition: background-color 0.3s ease;
+  border-radius: 0 12px 12px 0;
+}
+
+/* Left accent bar */
+.exp-accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.exp-block:hover .exp-accent { width: 5px; }
+
+/* CRT scan-line easter egg — appears on hover */
+.crt-overlay {
+  position: relative;
+  overflow: hidden;
+}
+.crt-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 212, 255, 0.04) 48%,
+    rgba(0, 212, 255, 0.08) 50%,
+    rgba(0, 212, 255, 0.04) 52%,
+    transparent 100%
+  );
+  background-size: 100% 6px;
+  animation: scanLine 3s linear infinite;
+  transition: opacity 0.3s ease;
+}
+.crt-overlay:hover::after { opacity: 1; }
+
+/* Per-company flavor backgrounds on hover */
+.exp-kone:hover      { background-color: rgba(239, 246, 255, 0.5); }
+.exp-ite:hover       { background-color: rgba(255, 245, 243, 0.5); }
+.exp-chevalier:hover { background-color: rgba(240, 250, 244, 0.5); }
+.exp-aceplan:hover   { background-color: rgba(245, 243, 255, 0.5); }
+.exp-ntu:hover       { background-color: rgba(255, 251, 235, 0.5); }
+
+/* Per-company accent bar colors */
+.accent-kone      { background-color: #005BAC; }
+.accent-ite       { background-color: #E84B37; }
+.accent-chevalier { background-color: #2D6A4F; }
+.accent-aceplan   { background-color: #7C3AED; }
+.accent-ntu       { background-color: #D97706; }
+
+/* Per-company icon badge colors */
+.badge-kone      { background-color: #EFF6FF; color: #005BAC; border: 1px solid rgba(0,91,172,0.2); }
+.badge-ite       { background-color: #FFF5F3; color: #E84B37; border: 1px solid rgba(232,75,55,0.2); }
+.badge-chevalier { background-color: #F0FAF4; color: #2D6A4F; border: 1px solid rgba(45,106,79,0.2); }
+.badge-aceplan   { background-color: #F5F3FF; color: #7C3AED; border: 1px solid rgba(124,58,237,0.2); }
+.badge-ntu       { background-color: #FFFBEB; color: #D97706; border: 1px solid rgba(217,119,6,0.2); }
+
+/* Cursor glow on experience sections */
+.exp-glow {
+  pointer-events: none;
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+.exp-block:hover .exp-glow { opacity: 1; }
+
+/* ── Education Cards ───────────────────────────────────────── */
+
+.edu-card {
+  border-radius: 14px;
+  border: 1px solid #E5E3DF;
+  background: #FFFFFF;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.edu-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(27, 79, 138, 0.1);
+}
+.edu-card-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #1B4F8A 0%, #00D4FF 100%);
+}
+
+/* ── Certification Pills ───────────────────────────────────── */
+
+.cert-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.875rem;
+  border-radius: 999px;
+  border: 1px solid #E5E3DF;
+  background: #FFFFFF;
+  font-size: 0.8rem;
+  color: #1A1A1A;
+  font-family: "DM Sans", sans-serif;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.cert-pill:hover {
+  border-color: #1B4F8A;
+  background: rgba(27, 79, 138, 0.04);
+  color: #1B4F8A;
+}
+
+/* ── Skill Badges (code-token style) ─────────────────────────
+   Three visual variants:
+   < tag />   — angle bracket style (hardware)
+   [ tag ]    — square bracket style (firmware/protocols)
+   { tag }    — curly brace style (software)
+   ─────────────────────────────────────────────────────────── */
+
+.skill-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  cursor: default;
+}
+.skill-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Angle bracket — Hardware */
+.badge-angle {
+  background: rgba(27, 79, 138, 0.06);
+  border-color: rgba(27, 79, 138, 0.2);
+  color: #1B4F8A;
+}
+.badge-angle:hover {
+  background: rgba(27, 79, 138, 0.12);
+}
+
+/* Square bracket — Firmware / Protocols */
+.badge-square {
+  background: rgba(0, 212, 255, 0.06);
+  border-color: rgba(0, 212, 255, 0.25);
+  color: #0099BB;
+}
+.badge-square:hover {
+  background: rgba(0, 212, 255, 0.12);
+}
+
+/* Curly brace — Software */
+.badge-curly {
+  background: rgba(124, 58, 237, 0.06);
+  border-color: rgba(124, 58, 237, 0.2);
+  color: #7C3AED;
+}
+.badge-curly:hover {
+  background: rgba(124, 58, 237, 0.12);
+}
+
+/* Soft skill — plain style */
+.badge-soft {
+  background: rgba(217, 119, 6, 0.06);
+  border-color: rgba(217, 119, 6, 0.2);
+  color: #B45309;
+}
+.badge-soft:hover {
+  background: rgba(217, 119, 6, 0.12);
+}
+
+/* ── Expand Button (AI "Learn more") ─────────────────────── */
+
+.expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-family: "JetBrains Mono", monospace;
+  color: #5A5A5A;
+  border: 1px solid #E5E3DF;
+  border-radius: 6px;
+  padding: 0.3rem 0.65rem;
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.expand-btn:hover {
+  color: #1B4F8A;
+  border-color: #1B4F8A;
+  background: rgba(27, 79, 138, 0.04);
+}
+
+/* ── Fit Assessment Section ───────────────────────────────── */
+
+#fit {
+  background: #0F2A4A;
+  /* secondary dot-grid for nerd echo */
+  background-image:
+    radial-gradient(circle, rgba(0, 212, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(#0F2A4A, #0F2A4A);
+  background-size: 24px 24px, 100% 100%;
+}
+
+#fitTextarea {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #F0F0F0;
+  border-radius: 10px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.2s, background 0.2s;
+}
+#fitTextarea::placeholder { color: rgba(255, 255, 255, 0.35); }
+#fitTextarea:focus {
+  outline: none;
+  border-color: #00D4FF;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* ── Chat Widget ──────────────────────────────────────────── */
+
+#chatPanel {
+  transform: translateY(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+}
+#chatPanel.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Typing indicator dots */
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1B4F8A;
+  animation: dotBounce 1.4s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Chat messages */
+.chat-user-msg {
+  background: #1B4F8A;
+  color: #FFFFFF;
+  border-radius: 14px 14px 4px 14px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  max-width: 80%;
+  margin-left: auto;
+  word-break: break-word;
+}
+.chat-bot-msg {
+  background: #F2F0EC;
+  color: #1A1A1A;
+  border-radius: 14px 14px 14px 4px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  max-width: 85%;
+  word-break: break-word;
+}
+.chat-bot-msg p  { margin: 0 0 0.4em; }
+.chat-bot-msg p:last-child { margin-bottom: 0; }
+.chat-bot-msg strong { font-weight: 600; color: #1B4F8A; }
+.chat-bot-msg em { font-style: italic; color: #5A5A5A; }
+.chat-bot-msg code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8em;
+  background: rgba(27, 79, 138, 0.08);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  color: #1B4F8A;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  background: #1B4F8A;
+  color: #FFFFFF;
+  border-radius: 8px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  background: #154074;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(27, 79, 138, 0.3);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  background: transparent;
+  color: #1B4F8A;
+  border-radius: 8px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 2px solid #1B4F8A;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.btn-outline:hover {
+  background: rgba(27, 79, 138, 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(27, 79, 138, 0.15);
+}
+
+/* ── Misc ─────────────────────────────────────────────────── */
+
+/* Smooth section transitions */
+section { position: relative; }
+
+/* GSAP initial hidden state helper */
+.gsap-reveal { opacity: 0; }
+
+/* Keyboard shortcut badge (nerd easter egg in nav) */
+.kbd {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.65rem;
+  background: #F2F0EC;
+  border: 1px solid #E5E3DF;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  color: #5A5A5A;
+}
