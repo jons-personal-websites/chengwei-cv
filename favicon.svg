@@ -1,30 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <!-- Chip body -->
-  <rect x="8" y="8" width="16" height="16" rx="2.5" fill="#1B4F8A"/>
-
-  <!-- Pins — left side -->
-  <rect x="4" y="11" width="4" height="2" rx="0.5" fill="#1B4F8A"/>
-  <rect x="4" y="15" width="4" height="2" rx="0.5" fill="#1B4F8A"/>
-  <rect x="4" y="19" width="4" height="2" rx="0.5" fill="#1B4F8A"/>
-
-  <!-- Pins — right side -->
-  <rect x="24" y="11" width="4" height="2" rx="0.5" fill="#1B4F8A"/>
-  <rect x="24" y="15" width="4" height="2" rx="0.5" fill="#1B4F8A"/>
-  <rect x="24" y="19" width="4" height="2" rx="0.5" fill="#1B4F8A"/>
-
-  <!-- Pins — top -->
-  <rect x="12" y="4" width="2" height="4" rx="0.5" fill="#1B4F8A"/>
-  <rect x="18" y="4" width="2" height="4" rx="0.5" fill="#1B4F8A"/>
-
-  <!-- Pins — bottom -->
-  <rect x="12" y="24" width="2" height="4" rx="0.5" fill="#1B4F8A"/>
-  <rect x="18" y="24" width="2" height="4" rx="0.5" fill="#1B4F8A"/>
-
-  <!-- Chip notch (IC polarity marker) — cyan dot -->
-  <circle cx="11.5" cy="11.5" r="1.5" fill="#00D4FF"/>
-
-  <!-- Inner circuit lines (subtle) -->
-  <line x1="14" y1="14" x2="18" y2="14" stroke="rgba(0,212,255,0.5)" stroke-width="0.75"/>
-  <line x1="16" y1="13" x2="16" y2="19" stroke="rgba(0,212,255,0.4)" stroke-width="0.75"/>
-  <rect x="14.5" y="17" width="3" height="3" rx="0.5" stroke="rgba(0,212,255,0.4)" stroke-width="0.75" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Cobalt background -->
+  <rect width="32" height="32" rx="6" fill="#1B4F8A"/>
+  <!-- CW lettering in white -->
+  <text x="16" y="22" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="13" letter-spacing="-0.5" fill="#FFFFFF">CW</text>
+  <!-- Cyan dot — nerd marker -->
+  <circle cx="27" cy="6" r="3" fill="#00D4FF"/>
 </svg>
